@@ -47,7 +47,7 @@ func GetAllPlayers() []Player {
 			log.Fatal(err)
 		}
 
-		player.Team = team.GetTeamFromId(teamID)
+		player.Team = team.GetTeamById(teamID)
 
 		players = append(players, player)
 	}
