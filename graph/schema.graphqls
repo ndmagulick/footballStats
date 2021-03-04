@@ -1,0 +1,66 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type League {
+  id: Int!
+  name: String!
+  country: String!
+  tier: Int!
+}
+
+type Team {
+  id: Int!
+  league: League!
+  name: String!
+  foundingYear: Int!
+  #Roster: [Player!]!
+}
+
+type Player {
+  id: Int!
+  firstName: String!
+  lastName: String!
+  #dateOfBirth: Need to figure this out
+  height: Float!
+  nationality: String!
+  position: String!
+  team: Team!
+  number: Int!
+  foot: String!
+}
+
+type Query {
+  leagues: [League!]!
+  teams: [Team!]!
+  players: [Player!]!
+}
+
+input NewLeague {
+  name: String!
+  country: String!
+  tier: Int!
+}
+
+input NewTeam {
+  name: String!
+  leagueId: Int!
+  foundingYear: Int!
+}
+
+input NewPlayer {
+  firstName: String!
+  lastName: String!
+  height: Float!
+  nationality: String!
+  position: String!
+  teamId: Int!
+  number: Int!
+  foot: String!
+}
+
+type Mutation {
+  createLeague(input: NewLeague!): League!
+  createTeam(input: NewTeam!): Team!
+  createPlayer(input: NewPlayer!): Player!
+}
