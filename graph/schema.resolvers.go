@@ -49,7 +49,7 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 
 	newPlayerID := newPlayer.Save()
 
-	newPlayerTeam := team.GetTeamFromId(input.TeamID)
+	newPlayerTeam := team.GetTeamById(input.TeamID)
 
 	return &model.Player{ID: int(newPlayerID), FirstName: newPlayer.FirstName, LastName: newPlayer.LastName, Height: newPlayer.Height, Nationality: newPlayer.Nationality,
 		Position: newPlayer.Position, Team: &model.Team{ID: newPlayerTeam.ID, League: (*model.League)(&newPlayerTeam.League), Name: newPlayerTeam.Name,

@@ -54,7 +54,7 @@ func GetAllTeams() []Team {
 	return teams
 }
 
-func GetTeamFromId(id int) Team {
+func GetTeamById(id int) Team {
 	stmt, err := database.Db.Prepare("SELECT TeamID, LeagueID, TeamName, FoundingYear FROM dbo.Teams")
 
 	if err != nil {
