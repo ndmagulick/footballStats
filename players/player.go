@@ -59,6 +59,47 @@ func GetAllPlayers() []Player {
 	return players
 }
 
+func GetPlayerById(id int) Player {
+	stmt, err := database.Db.Prepare("SELECT PlayerID, FirstName, LastName, /*DateOfBirth,*/ Height, Nationality, Position, TeamID, Number, Foot FROM dbo.Players WHERE PlayerID = ?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer stmt.Close()
+
+	rows, err := stmt.Query(id)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	var playerFromID Player
+
+	for rows.Next() {
+		var playerRow Player
+		teamID := 0
+
+		err := rows.Scan(&playerRow.ID, &playerRow.FirstName, &playerRow.LastName, &playerRow.Height, &playerRow.Nationality, &playerRow.Position, &teamID, &playerRow.Number, &playerRow.Foot)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		playerRow.Team = team.GetTeamById(teamID)
+
+		playerFromID = playerRow
+	}
+
+	if err = rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return playerFromID
+}
+
 func (player Player) Save() int64 {
 	stmt, err := database.Db.Prepare("INSERT INTO dbo.Players(FirstName, LastName, Height, Nationality, Position, TeamID, Number, Foot) VALUES(?, ?, ?, ?, ?, ?, ?, ?); SELECT SCOPE_IDENTITY()")
 
@@ -76,4 +117,39 @@ func (player Player) Save() int64 {
 	log.Print("Player inserted!")
 
 	return id
+}
+
+func UpdatePlayer(updatedPlayer Player) Player {
+	stmt, err := database.Db.Prepare("UPDATE dbo.Players SET Firstname = ?, LastName = ?, Height = ?, Nationality = ?, Position = ?, TeamID = ?, Number = ?, Foot = ? WHERE PlayerID = ?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err := stmt.Query(updatedPlayer.FirstName, updatedPlayer.LastName, updatedPlayer.Height, updatedPlayer.Nationality, updatedPlayer.Position, updatedPlayer.Team.ID,
+		updatedPlayer.Number, updatedPlayer.Foot, updatedPlayer.ID)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows.Close()
+
+	return GetPlayerById(updatedPlayer.ID)
+}
+
+func DeletePlayer(id int) {
+	stmt, err := database.Db.Prepare("DELETE FROM dbo.Players WHERE PlayerID = ?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err := stmt.Query(id)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows.Close()
 }

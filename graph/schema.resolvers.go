@@ -56,6 +56,109 @@ func (r *mutationResolver) CreatePlayer(ctx context.Context, input model.NewPlay
 			FoundingYear: newPlayerTeam.FoundingYear}, Number: newPlayer.Number, Foot: newPlayer.Foot}, nil
 }
 
+func (r *mutationResolver) UpdateLeague(ctx context.Context, input model.UpdatedLeague) (*model.League, error) {
+	leagueToUpdate := league.GetLeagueById(input.ID)
+
+	if input.Name != nil && len(*input.Name) > 0 {
+		leagueToUpdate.Name = *input.Name
+	}
+
+	if input.Country != nil && len(*input.Country) > 0 {
+		leagueToUpdate.Country = *input.Country
+	}
+
+	if input.Tier != nil && *input.Tier > 0 {
+		leagueToUpdate.Tier = *input.Tier
+	}
+
+	leagueToUpdate = league.UpdateLeague(leagueToUpdate)
+
+	return &model.League{ID: leagueToUpdate.ID, Name: leagueToUpdate.Name, Country: leagueToUpdate.Country, Tier: leagueToUpdate.Tier}, nil
+}
+
+func (r *mutationResolver) UpdateTeam(ctx context.Context, input model.UpdatedTeam) (*model.Team, error) {
+	teamToUpdate := team.GetTeamById(input.ID)
+
+	if input.LeagueID != nil && *input.LeagueID > 0 {
+		teamToUpdate.League.ID = *input.LeagueID
+	}
+
+	if input.Name != nil && len(*input.Name) > 0 {
+		teamToUpdate.Name = *input.Name
+	}
+
+	if input.FoundingYear != nil && *input.FoundingYear > 0 {
+		teamToUpdate.FoundingYear = *input.FoundingYear
+	}
+
+	teamToUpdate = team.UpdateTeam(teamToUpdate)
+
+	return &model.Team{ID: teamToUpdate.ID, League: (*model.League)(&teamToUpdate.League), Name: teamToUpdate.Name, FoundingYear: teamToUpdate.FoundingYear}, nil
+}
+
+func (r *mutationResolver) UpdatePlayer(ctx context.Context, input model.UpdatedPlayer) (*model.Player, error) {
+	playerToUpdate := player.GetPlayerById(input.ID)
+
+	if input.FirstName != nil && len(*input.FirstName) > 0 {
+		playerToUpdate.FirstName = *input.FirstName
+	}
+
+	if input.LastName != nil && len(*input.LastName) > 0 {
+		playerToUpdate.LastName = *input.LastName
+	}
+
+	if input.Height != nil && *input.Height > 0.00 {
+		playerToUpdate.Height = *input.Height
+	}
+
+	if input.Nationality != nil && len(*input.Nationality) > 0 {
+		playerToUpdate.Nationality = *input.Nationality
+	}
+
+	if input.Position != nil && len(*input.Position) > 0 {
+		playerToUpdate.Position = *input.Position
+	}
+
+	if input.TeamID != nil && *input.TeamID > 0 {
+		playerToUpdate.Team.ID = *input.TeamID
+	}
+
+	if input.Number != nil && *input.Number > 0 {
+		playerToUpdate.Number = *input.Number
+	}
+
+	if input.Foot != nil && len(*input.Foot) > 0 {
+		playerToUpdate.Foot = *input.Foot
+	}
+
+	playerToUpdate = player.UpdatePlayer(playerToUpdate)
+
+	playerToUpdateTeam := team.GetTeamById(playerToUpdate.Team.ID)
+
+	return &model.Player{ID: playerToUpdate.ID, FirstName: playerToUpdate.FirstName, LastName: playerToUpdate.LastName, Height: playerToUpdate.Height,
+		Nationality: playerToUpdate.Nationality, Position: playerToUpdate.Position, Team: &model.Team{ID: playerToUpdateTeam.ID,
+			League: (*model.League)(&playerToUpdateTeam.League), Name: playerToUpdateTeam.Name, FoundingYear: playerToUpdateTeam.FoundingYear},
+		Number: playerToUpdate.Number, Foot: playerToUpdate.Foot}, nil
+}
+
+func (r *mutationResolver) DeleteLeague(ctx context.Context, id int) (*model.DeleteResponse, error) {
+	league.DeleteLeague(id)
+
+	return &model.DeleteResponse{Message: "Successfully deleted league"}, nil
+}
+
+func (r *mutationResolver) DeleteTeam(ctx context.Context, id int) (*model.DeleteResponse, error) {
+	team.DeleteTeam(id)
+
+	return &model.DeleteResponse{Message: "Successfully deleted team"}, nil
+}
+
+func (r *mutationResolver) DeletePlayer(ctx context.Context, id int) (*model.DeleteResponse, error) {
+	player.DeletePlayer(id)
+
+	return &model.DeleteResponse{Message: "Successfully deleted player"}, nil
+}
+
 func (r *queryResolver) Leagues(ctx context.Context) ([]*model.League, error) {
 	var resultLeagues []*model.League
 	var dbLeagues []league.League

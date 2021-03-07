@@ -3,7 +3,6 @@ package league
 import (
 	"footballStats/database"
 	"log"
-	"strconv"
 )
 
 type League struct {
@@ -51,7 +50,7 @@ func GetAllLeagues() []League {
 }
 
 func GetLeagueById(id int) League {
-	stmt, err := database.Db.Prepare("SELECT LeagueID, LeagueName, Country, Tier FROM dbo.Leagues WHERE LeagueID = " + strconv.Itoa(id))
+	stmt, err := database.Db.Prepare("SELECT LeagueID, LeagueName, Country, Tier FROM dbo.Leagues WHERE LeagueID = ?")
 
 	if err != nil {
 		log.Fatal(err)
@@ -59,7 +58,7 @@ func GetLeagueById(id int) League {
 
 	defer stmt.Close()
 
-	rows, err := stmt.Query()
+	rows, err := stmt.Query(id)
 
 	if err != nil {
 		log.Fatal(err)
@@ -70,14 +69,14 @@ func GetLeagueById(id int) League {
 	var leagueFromID League
 
 	for rows.Next() {
-		var league League
-		err := rows.Scan(&league.ID, &league.Name, &league.Country, &league.Tier)
+		var leagueRow League
+		err := rows.Scan(&leagueRow.ID, &leagueRow.Name, &leagueRow.Country, &leagueRow.Tier)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		leagueFromID = league
+		leagueFromID = leagueRow
 	}
 
 	if err = rows.Err(); err != nil {
@@ -104,4 +103,39 @@ func (league League) Save() int64 {
 	log.Print("League inserted!")
 
 	return id
+}
+
+func UpdateLeague(updatedLeague League) League {
+
+	stmt, err := database.Db.Prepare("UPDATE dbo.Leagues SET LeagueName = ?, Country = ?, Tier = ? WHERE LeagueID = ?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err := stmt.Query(updatedLeague.Name, updatedLeague.Country, updatedLeague.Tier, updatedLeague.ID)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows.Close()
+
+	return GetLeagueById(updatedLeague.ID)
+}
+
+func DeleteLeague(id int) {
+	stmt, err := database.Db.Prepare("DELETE FROM dbo.Leagues WHERE LeagueID = ?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err := stmt.Query(id)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows.Close()
 }

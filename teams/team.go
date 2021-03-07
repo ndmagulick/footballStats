@@ -55,7 +55,7 @@ func GetAllTeams() []Team {
 }
 
 func GetTeamById(id int) Team {
-	stmt, err := database.Db.Prepare("SELECT TeamID, LeagueID, TeamName, FoundingYear FROM dbo.Teams")
+	stmt, err := database.Db.Prepare("SELECT TeamID, LeagueID, TeamName, FoundingYear FROM dbo.Teams WHERE TeamId = ?")
 
 	if err != nil {
 		log.Fatal(err)
@@ -63,7 +63,7 @@ func GetTeamById(id int) Team {
 
 	defer stmt.Close()
 
-	rows, err := stmt.Query()
+	rows, err := stmt.Query(id)
 
 	if err != nil {
 		log.Fatal(err)
@@ -74,18 +74,18 @@ func GetTeamById(id int) Team {
 	var teamFromID Team
 
 	for rows.Next() {
-		var team Team
+		var teamRow Team
 		leagueID := 0
 
-		err := rows.Scan(&team.ID, &leagueID, &team.Name, &team.FoundingYear)
+		err := rows.Scan(&teamRow.ID, &leagueID, &teamRow.Name, &teamRow.FoundingYear)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		team.League = league.GetLeagueById(leagueID)
+		teamRow.League = league.GetLeagueById(leagueID)
 
-		teamFromID = team
+		teamFromID = teamRow
 	}
 
 	if err = rows.Err(); err != nil {
@@ -112,4 +112,38 @@ func (team Team) Save() int64 {
 	log.Print("Team inserted!")
 
 	return id
+}
+
+func UpdateTeam(updatedTeam Team) Team {
+	stmt, err := database.Db.Prepare("UPDATE dbo.Teams SET LeagueID = ?, TeamName = ?, FoundingYear = ? WHERE TeamID = ?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err := stmt.Query(updatedTeam.League.ID, updatedTeam.Name, updatedTeam.FoundingYear, updatedTeam.ID)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows.Close()
+
+	return GetTeamById(updatedTeam.ID)
+}
+
+func DeleteTeam(id int) {
+	stmt, err := database.Db.Prepare("DELETE FROM dbo.Teams WHERE TeamID = ?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err := stmt.Query(id)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows.Close()
 }

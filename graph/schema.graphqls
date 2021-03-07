@@ -34,6 +34,11 @@ type Query {
   leagues: [League!]!
   teams: [Team!]!
   players: [Player!]!
+  #Need get by ID's
+}
+
+type DeleteResponse {
+  message: String!
 }
 
 input NewLeague {
@@ -59,8 +64,40 @@ input NewPlayer {
   foot: String!
 }
 
+input UpdatedLeague {
+  id: Int!
+  name: String
+  country: String
+  tier: Int
+}
+
+input UpdatedTeam {
+  id: Int!
+  leagueId: Int
+  name: String
+  foundingYear: Int
+}
+
+input UpdatedPlayer {
+  id: Int!
+  firstName: String
+  lastName: String
+  height: Float
+  nationality: String
+  position: String
+  teamId: Int
+  number: Int
+  foot: String
+}
+
 type Mutation {
   createLeague(input: NewLeague!): League!
   createTeam(input: NewTeam!): Team!
   createPlayer(input: NewPlayer!): Player!
+  updateLeague(input: UpdatedLeague!): League!
+  updateTeam(input: UpdatedTeam!): Team!
+  updatePlayer(input: UpdatedPlayer!): Player!
+  deleteLeague(id: Int!): DeleteResponse!
+  deleteTeam(id: Int!): DeleteResponse!
+  deletePlayer(id: Int!): DeleteResponse!
 }

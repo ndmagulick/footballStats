@@ -2,6 +2,10 @@
 
 package model
 
+type DeleteResponse struct {
+	Message string `json:"message"`
+}
+
 type League struct {
 	ID      int    `json:"id"`
 	Name    string `json:"name"`
@@ -49,4 +53,30 @@ type Team struct {
 	League       *League `json:"league"`
 	Name         string  `json:"name"`
 	FoundingYear int     `json:"foundingYear"`
+}
+
+type UpdatedLeague struct {
+	ID      int     `json:"id"`
+	Name    *string `json:"name"`
+	Country *string `json:"country"`
+	Tier    *int    `json:"tier"`
+}
+
+type UpdatedPlayer struct {
+	ID          int      `json:"id"`
+	FirstName   *string  `json:"firstName"`
+	LastName    *string  `json:"lastName"`
+	Height      *float64 `json:"height"`
+	Nationality *string  `json:"nationality"`
+	Position    *string  `json:"position"`
+	TeamID      *int     `json:"teamId"`
+	Number      *int     `json:"number"`
+	Foot        *string  `json:"foot"`
+}
+
+type UpdatedTeam struct {
+	ID           int     `json:"id"`
+	LeagueID     *int    `json:"leagueId"`
+	Name         *string `json:"name"`
+	FoundingYear *int    `json:"foundingYear"`
 }
