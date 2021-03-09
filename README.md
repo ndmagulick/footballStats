@@ -6,6 +6,8 @@ This is just a small project for me to learn GraphQL, and React. As well as for 
 
 The objective here is to make a website that is similar to "TransferMarkt", but make it look more modern, and quicker.
 
+Current status as of 8 March 2021: Creating underlying database, and GraphQL server. 
+
 Plan:
 1. Create basic app for just standard domestic leagues 
 2. Expand app to handle other tournaments such as domestic cups (DFB Pokal, FA Cup, etc), and continental competitions (Champions League, Europa League, etc)
@@ -21,3 +23,4 @@ Things I need to do/address:
 - Figure out how to deal with dates in GraphQL
 - Add match stats table
 - Seed data
+- Unit tests
