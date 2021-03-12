@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"footballStats/graph/generated"
 	"footballStats/graph/model"
 	league "footballStats/leagues"
@@ -198,6 +199,26 @@ func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 	}
 
 	return resultPlayers, nil
+}
+
+func (r *queryResolver) Seasons(ctx context.Context) ([]*model.Season, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Matches(ctx context.Context) ([]*model.Match, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) MatchesBySeasonID(ctx context.Context, seasonID int) ([]*model.Match, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) MatchEventsByMatchID(ctx context.Context, matchID int) ([]*model.MatchEvent, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) MatchStatsByMatchID(ctx context.Context, matchID int) (*model.MatchStats, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Mutation returns generated.MutationResolver implementation.

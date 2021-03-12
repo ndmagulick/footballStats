@@ -30,11 +30,63 @@ type Player {
   foot: String!
 }
 
+type Season {
+  id: Int!
+  league: League!
+  startYear: Int!
+  endYear: Int!
+}
+
+type Match {
+  id: Int!
+  season: Season!
+  homeTeam: Team!
+  awayTeam: Team!
+  matchDay: Int!
+  #matchDate: <some date type i need to figure out>
+  matchEvents: [MatchEvent!]
+  matchStats: MatchStats
+}
+
+type MatchEvent {
+  id: Int!
+  match: Match!
+  team: Team!
+  player: Player!
+  eventType: Int! #Will correspond to an enum
+  eventMinute: Int!
+  stoppageTime: Int
+}
+
+type MatchStats {
+  id: Int!
+  Match: Match!
+  possessionHome: Int!
+  totalShotsHome: Int!
+  shotsOnTargetHome: Int!
+  savesHome: Int!
+  cornersHome: Int!
+  foulsHome: Int!
+  offsidesHome: Int!
+  possessionAway: Int!
+  totalShotsAway: Int!
+  shotsOnTargetAway: Int!
+  savesAway: Int!
+  cornersAway: Int!
+  foulsAway: Int!
+  offsidesAway: Int!
+}
+
 type Query {
   leagues: [League!]!
   teams: [Team!]!
   players: [Player!]!
+  seasons: [Season!]!
+  matches: [Match!]!
   #Need get by ID's
+  matchesBySeasonId(seasonId: Int!): [Match!]!
+  matchEventsByMatchId(matchId: Int!): [MatchEvent!]
+  matchStatsByMatchId(matchId: Int!): MatchStats!
 }
 
 type DeleteResponse {
@@ -90,6 +142,7 @@ input UpdatedPlayer {
   foot: String
 }
 
+#TODO: Mutations for seasons, matches, match events, match stats
 type Mutation {
   createLeague(input: NewLeague!): League!
   createTeam(input: NewTeam!): Team!

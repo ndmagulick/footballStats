@@ -13,6 +13,45 @@ type League struct {
 	Tier    int    `json:"tier"`
 }
 
+type Match struct {
+	ID          int           `json:"id"`
+	Season      *Season       `json:"season"`
+	HomeTeam    *Team         `json:"homeTeam"`
+	AwayTeam    *Team         `json:"awayTeam"`
+	MatchDay    int           `json:"matchDay"`
+	MatchEvents []*MatchEvent `json:"matchEvents"`
+	MatchStats  *MatchStats   `json:"matchStats"`
+}
+
+type MatchEvent struct {
+	ID           int     `json:"id"`
+	Match        *Match  `json:"match"`
+	Team         *Team   `json:"team"`
+	Player       *Player `json:"player"`
+	EventType    int     `json:"eventType"`
+	EventMinute  int     `json:"eventMinute"`
+	StoppageTime *int    `json:"stoppageTime"`
+}
+
+type MatchStats struct {
+	ID                int    `json:"id"`
+	Match             *Match `json:"Match"`
+	PossessionHome    int    `json:"possessionHome"`
+	TotalShotsHome    int    `json:"totalShotsHome"`
+	ShotsOnTargetHome int    `json:"shotsOnTargetHome"`
+	SavesHome         int    `json:"savesHome"`
+	CornersHome       int    `json:"cornersHome"`
+	FoulsHome         int    `json:"foulsHome"`
+	OffsidesHome      int    `json:"offsidesHome"`
+	PossessionAway    int    `json:"possessionAway"`
+	TotalShotsAway    int    `json:"totalShotsAway"`
+	ShotsOnTargetAway int    `json:"shotsOnTargetAway"`
+	SavesAway         int    `json:"savesAway"`
+	CornersAway       int    `json:"cornersAway"`
+	FoulsAway         int    `json:"foulsAway"`
+	OffsidesAway      int    `json:"offsidesAway"`
+}
+
 type NewLeague struct {
 	Name    string `json:"name"`
 	Country string `json:"country"`
@@ -46,6 +85,13 @@ type Player struct {
 	Team        *Team   `json:"team"`
 	Number      int     `json:"number"`
 	Foot        string  `json:"foot"`
+}
+
+type Season struct {
+	ID        int     `json:"id"`
+	League    *League `json:"league"`
+	StartYear int     `json:"startYear"`
+	EndYear   int     `json:"endYear"`
 }
 
 type Team struct {
