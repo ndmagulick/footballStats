@@ -14,3 +14,7 @@ type Match struct {
 	MatchEvents []MatchEvent
 	MatchStats  MatchStats
 }
+
+//get match by id
+//get matches by season id
+//
