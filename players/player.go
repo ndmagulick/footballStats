@@ -110,6 +110,8 @@ func (player Player) Save() int64 {
 	var id int64 = 0
 	err = stmt.QueryRow(player.FirstName, player.LastName, player.Height, player.Nationality, player.Position, player.Team.ID, player.Number, player.Foot).Scan(&id)
 
+	defer stmt.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}

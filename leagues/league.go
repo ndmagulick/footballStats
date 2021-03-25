@@ -96,6 +96,8 @@ func (league League) Save() int64 {
 	var id int64 = 0
 	err = stmt.QueryRow(league.Name, league.Country, league.Tier).Scan(&id)
 
+	defer stmt.Close()
+
 	if err != nil {
 		log.Fatal(err)
 	}

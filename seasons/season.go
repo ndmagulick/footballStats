@@ -120,7 +120,55 @@ func GetSeasonById(seasonId int) Season {
 	return seasonById
 }
 
-//get season by id
-//save
-//update
-//delete
+func (season Season) Save() int64 {
+	stmt, err := database.Db.Prepare("INSERT INTO dbo.Seasons(LeagueID, StartYear, EndYear) VALUES(?, ?, ?); SELECT SCOPE_IDENTITY")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var id int64 = 0
+	err = stmt.QueryRow(season.League.ID, season.StartYear, season.EndYear).Scan(&id)
+
+	defer stmt.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return id
+}
+
+func UpdateSeason(updatedSeason Season) Season {
+	stmt, err := database.Db.Prepare("UPDATE dbo.Seasons SET LeagueID = ?, StartYear = ?, EndYear = ? WHERE SeasonID = ?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err := stmt.Query(updatedSeason.League.ID, updatedSeason.StartYear, updatedSeason.EndYear, updatedSeason.ID)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows.Close()
+
+	return GetSeasonById(updatedSeason.ID)
+}
+
+func DeleteSeason(id int) {
+	stmt, err := database.Db.Prepare("DELETE FROM dbo.Seasons WHERE SeasonID = ?")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows, err := stmt.Query(id)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rows.Close()
+}
