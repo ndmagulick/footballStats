@@ -14,13 +14,11 @@ type League struct {
 }
 
 type Match struct {
-	ID          int           `json:"id"`
-	Season      *Season       `json:"season"`
-	HomeTeam    *Team         `json:"homeTeam"`
-	AwayTeam    *Team         `json:"awayTeam"`
-	MatchDay    int           `json:"matchDay"`
-	MatchEvents []*MatchEvent `json:"matchEvents"`
-	MatchStats  *MatchStats   `json:"matchStats"`
+	ID       int     `json:"id"`
+	Season   *Season `json:"season"`
+	HomeTeam *Team   `json:"homeTeam"`
+	AwayTeam *Team   `json:"awayTeam"`
+	MatchDay int     `json:"matchDay"`
 }
 
 type MatchEvent struct {
@@ -58,6 +56,40 @@ type NewLeague struct {
 	Tier    int    `json:"tier"`
 }
 
+type NewMatch struct {
+	SeasonID   int `json:"seasonId"`
+	HomeTeamID int `json:"homeTeamId"`
+	AwayTeamID int `json:"awayTeamId"`
+	MatchDay   int `json:"matchDay"`
+}
+
+type NewMatchEvent struct {
+	MatchID      int  `json:"matchId"`
+	TeamID       int  `json:"teamId"`
+	PlayerID     int  `json:"playerId"`
+	EventType    int  `json:"eventType"`
+	EventMinute  int  `json:"eventMinute"`
+	StoppageTime *int `json:"stoppageTime"`
+}
+
+type NewMatchStats struct {
+	MatchID           int `json:"MatchId"`
+	PossessionHome    int `json:"possessionHome"`
+	TotalShotsHome    int `json:"totalShotsHome"`
+	ShotsOnTargetHome int `json:"shotsOnTargetHome"`
+	SavesHome         int `json:"savesHome"`
+	CornersHome       int `json:"cornersHome"`
+	FoulsHome         int `json:"foulsHome"`
+	OffsidesHome      int `json:"offsidesHome"`
+	PossessionAway    int `json:"possessionAway"`
+	TotalShotsAway    int `json:"totalShotsAway"`
+	ShotsOnTargetAway int `json:"shotsOnTargetAway"`
+	SavesAway         int `json:"savesAway"`
+	CornersAway       int `json:"cornersAway"`
+	FoulsAway         int `json:"foulsAway"`
+	OffsidesAway      int `json:"offsidesAway"`
+}
+
 type NewPlayer struct {
 	FirstName   string  `json:"firstName"`
 	LastName    string  `json:"lastName"`
@@ -67,6 +99,12 @@ type NewPlayer struct {
 	TeamID      int     `json:"teamId"`
 	Number      int     `json:"number"`
 	Foot        string  `json:"foot"`
+}
+
+type NewSeason struct {
+	LeagueID  int `json:"leagueId"`
+	StartYear int `json:"startYear"`
+	EndYear   int `json:"endYear"`
 }
 
 type NewTeam struct {
@@ -108,6 +146,43 @@ type UpdatedLeague struct {
 	Tier    *int    `json:"tier"`
 }
 
+type UpdatedMatch struct {
+	ID         int  `json:"id"`
+	SeasonID   *int `json:"seasonId"`
+	HomeTeamID *int `json:"homeTeamId"`
+	AwayTeamID *int `json:"awayTeamId"`
+	MatchDay   *int `json:"matchDay"`
+}
+
+type UpdatedMatchEvent struct {
+	ID           int  `json:"id"`
+	MatchID      *int `json:"matchId"`
+	TeamID       *int `json:"teamId"`
+	PlayerID     *int `json:"playerId"`
+	EventType    int  `json:"eventType"`
+	EventMinute  *int `json:"eventMinute"`
+	StoppageTime *int `json:"stoppageTime"`
+}
+
+type UpdatedMatchStats struct {
+	ID                int  `json:"id"`
+	MatchID           *int `json:"MatchId"`
+	PossessionHome    *int `json:"possessionHome"`
+	TotalShotsHome    *int `json:"totalShotsHome"`
+	ShotsOnTargetHome *int `json:"shotsOnTargetHome"`
+	SavesHome         *int `json:"savesHome"`
+	CornersHome       *int `json:"cornersHome"`
+	FoulsHome         *int `json:"foulsHome"`
+	OffsidesHome      *int `json:"offsidesHome"`
+	PossessionAway    *int `json:"possessionAway"`
+	TotalShotsAway    *int `json:"totalShotsAway"`
+	ShotsOnTargetAway *int `json:"shotsOnTargetAway"`
+	SavesAway         *int `json:"savesAway"`
+	CornersAway       *int `json:"cornersAway"`
+	FoulsAway         *int `json:"foulsAway"`
+	OffsidesAway      *int `json:"offsidesAway"`
+}
+
 type UpdatedPlayer struct {
 	ID          int      `json:"id"`
 	FirstName   *string  `json:"firstName"`
@@ -118,6 +193,13 @@ type UpdatedPlayer struct {
 	TeamID      *int     `json:"teamId"`
 	Number      *int     `json:"number"`
 	Foot        *string  `json:"foot"`
+}
+
+type UpdatedSeason struct {
+	ID        int  `json:"id"`
+	LeagueID  *int `json:"leagueId"`
+	StartYear *int `json:"startYear"`
+	EndYear   *int `json:"endYear"`
 }
 
 type UpdatedTeam struct {

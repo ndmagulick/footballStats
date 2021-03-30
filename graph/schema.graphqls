@@ -2,6 +2,7 @@
 #
 # https://gqlgen.com/getting-started/
 
+#League Types/Inputs
 type League {
   id: Int!
   name: String!
@@ -9,6 +10,20 @@ type League {
   tier: Int!
 }
 
+input NewLeague {
+  name: String!
+  country: String!
+  tier: Int!
+}
+
+input UpdatedLeague {
+  id: Int!
+  name: String
+  country: String
+  tier: Int
+}
+
+#Team Types/Inputs
 type Team {
   id: Int!
   league: League!
@@ -17,6 +32,20 @@ type Team {
   #Roster: [Player!]!
 }
 
+input NewTeam {
+  name: String!
+  leagueId: Int!
+  foundingYear: Int!
+}
+
+input UpdatedTeam {
+  id: Int!
+  leagueId: Int
+  name: String
+  foundingYear: Int
+}
+
+#Player Types/Inputs
 type Player {
   id: Int!
   firstName: String!
@@ -30,6 +59,30 @@ type Player {
   foot: String!
 }
 
+input NewPlayer {
+  firstName: String!
+  lastName: String!
+  height: Float!
+  nationality: String!
+  position: String!
+  teamId: Int!
+  number: Int!
+  foot: String!
+}
+
+input UpdatedPlayer {
+  id: Int!
+  firstName: String
+  lastName: String
+  height: Float
+  nationality: String
+  position: String
+  teamId: Int
+  number: Int
+  foot: String
+}
+
+#Season Types/Inputs
 type Season {
   id: Int!
   league: League!
@@ -37,6 +90,20 @@ type Season {
   endYear: Int!
 }
 
+input NewSeason {
+  leagueId: Int!
+  startYear: Int!
+  endYear: Int!
+}
+
+input UpdatedSeason {
+  id: Int!
+  leagueId: Int
+  startYear: Int
+  endYear: Int
+}
+
+#Match Types/Inputs
 type Match {
   id: Int!
   season: Season!
@@ -44,20 +111,59 @@ type Match {
   awayTeam: Team!
   matchDay: Int!
   #matchDate: <some date type i need to figure out>
-  matchEvents: [MatchEvent!]
-  matchStats: MatchStats
+  #matchEvents: [MatchEvent!]
+  #matchStats: MatchStats
 }
 
+input NewMatch {
+  seasonId: Int!
+  homeTeamId: Int!
+  awayTeamId: Int!
+  matchDay: Int!
+  #matchDate: <some date type i need to figure out>
+  #matchEvents: [MatchEvent!]
+  #matchStats: MatchStats
+}
+
+input UpdatedMatch {
+  id: Int!
+  seasonId: Int
+  homeTeamId: Int
+  awayTeamId: Int
+  matchDay: Int
+}
+
+#Match Event Types/Inputs
 type MatchEvent {
   id: Int!
   match: Match!
   team: Team!
   player: Player!
-  eventType: Int! #Will correspond to an enum
+  eventType: Int!
   eventMinute: Int!
   stoppageTime: Int
 }
 
+input NewMatchEvent {
+  matchId: Int!
+  teamId: Int!
+  playerId: Int!
+  eventType: Int! 
+  eventMinute: Int!
+  stoppageTime: Int
+}
+
+input UpdatedMatchEvent {
+  id: Int!
+  matchId: Int
+  teamId: Int
+  playerId: Int
+  eventType: Int!
+  eventMinute: Int
+  stoppageTime: Int
+}
+
+#Match Stats Types/Inputs
 type MatchStats {
   id: Int!
   Match: Match!
@@ -77,80 +183,110 @@ type MatchStats {
   offsidesAway: Int!
 }
 
-type Query {
-  leagues: [League!]!
-  teams: [Team!]!
-  players: [Player!]!
-  seasons: [Season!]!
-  matches: [Match!]!
-  #Need get by ID's
-  matchesBySeasonId(seasonId: Int!): [Match!]!
-  matchEventsByMatchId(matchId: Int!): [MatchEvent!]
-  matchStatsByMatchId(matchId: Int!): MatchStats!
+input NewMatchStats {
+  MatchId: Int!
+  possessionHome: Int!
+  totalShotsHome: Int!
+  shotsOnTargetHome: Int!
+  savesHome: Int!
+  cornersHome: Int!
+  foulsHome: Int!
+  offsidesHome: Int!
+  possessionAway: Int!
+  totalShotsAway: Int!
+  shotsOnTargetAway: Int!
+  savesAway: Int!
+  cornersAway: Int!
+  foulsAway: Int!
+  offsidesAway: Int!
 }
 
+input UpdatedMatchStats {
+  id: Int!
+  MatchId: Int
+  possessionHome: Int
+  totalShotsHome: Int
+  shotsOnTargetHome: Int
+  savesHome: Int
+  cornersHome: Int
+  foulsHome: Int
+  offsidesHome: Int
+  possessionAway: Int
+  totalShotsAway: Int
+  shotsOnTargetAway: Int
+  savesAway: Int
+  cornersAway: Int
+  foulsAway: Int
+  offsidesAway: Int
+}
+
+#Response for deletion
 type DeleteResponse {
   message: String!
 }
 
-input NewLeague {
-  name: String!
-  country: String!
-  tier: Int!
+type Query {
+  #Leagues
+  leagues: [League!]!
+  leagueById(leagueId: Int!): League!
+
+  #Teams
+  teams: [Team!]!
+  teamById(teamId: Int!): Team!
+  
+  #Players
+  players: [Player!]!
+  playerById(playerId: Int!): Player!
+
+  #Seasons
+  seasonByLeagueId(leagueId: Int!): [Season!]!
+  seasonById(seasonId: Int!): Season!
+
+  #Matches
+  matches: [Match!]!
+  matchById(matchId: Int!): Match!
+  matchesBySeasonId(seasonId: Int!): [Match!]!
+
+  #Match Events
+  matchEventsByMatchId(matchId: Int!): [MatchEvent!]
+  
+  #Match Stats
+  matchStatsByMatchId(matchId: Int!): MatchStats!
 }
 
-input NewTeam {
-  name: String!
-  leagueId: Int!
-  foundingYear: Int!
-}
-
-input NewPlayer {
-  firstName: String!
-  lastName: String!
-  height: Float!
-  nationality: String!
-  position: String!
-  teamId: Int!
-  number: Int!
-  foot: String!
-}
-
-input UpdatedLeague {
-  id: Int!
-  name: String
-  country: String
-  tier: Int
-}
-
-input UpdatedTeam {
-  id: Int!
-  leagueId: Int
-  name: String
-  foundingYear: Int
-}
-
-input UpdatedPlayer {
-  id: Int!
-  firstName: String
-  lastName: String
-  height: Float
-  nationality: String
-  position: String
-  teamId: Int
-  number: Int
-  foot: String
-}
-
-#TODO: Mutations for seasons, matches, match events, match stats
 type Mutation {
+  #Leagues
   createLeague(input: NewLeague!): League!
-  createTeam(input: NewTeam!): Team!
-  createPlayer(input: NewPlayer!): Player!
   updateLeague(input: UpdatedLeague!): League!
-  updateTeam(input: UpdatedTeam!): Team!
-  updatePlayer(input: UpdatedPlayer!): Player!
   deleteLeague(id: Int!): DeleteResponse!
+
+  #Teams
+  createTeam(input: NewTeam!): Team!
+  updateTeam(input: UpdatedTeam!): Team!
   deleteTeam(id: Int!): DeleteResponse!
+
+  #Players
+  createPlayer(input: NewPlayer!): Player!
+  updatePlayer(input: UpdatedPlayer!): Player!
   deletePlayer(id: Int!): DeleteResponse!
+
+  #Seasons
+  createSeason(input: NewSeason!): Season!
+  updateSeason(input: UpdatedSeason!): Season!
+  deleteSeason(id: Int!): DeleteResponse!
+
+  #Matches
+  createMatch(input: NewMatch!): Match!
+  updateMatch(input: UpdatedMatch!): Match!
+  deleteMatch(id: Int!): DeleteResponse!
+
+  #Match Events
+  createMatchEvent(input: NewMatchEvent!): MatchEvent!
+  updateMatchEvent(input: UpdatedMatchEvent!): MatchEvent!
+  deleteMatchEvent(id: Int!): DeleteResponse!
+
+  #Match Stats
+  createMatchStats(input: NewMatchStats!): MatchStats!
+  updateMatchStats(input: UpdatedMatchStats!): MatchStats!
+  deleteMatchStats(id: Int!): DeleteResponse
 }
