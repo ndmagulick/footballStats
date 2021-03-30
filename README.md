@@ -14,14 +14,12 @@ Plan:
 3. Expand app to handle national teams, and international team matches (friendlies, world cup, euros, etc)
 
 Things I need to do/address:
+- Refactor resolver code into their schema's corresponding Go files
 - Find out why some graphql structs/models are behaving differently from others
-- Maybe break out resolver code into their schema's corresponding Go files
 - Try to simplify database functions
 - Field validation for new/updated records
 - Dependency checks for deletions (this will be very important for when we start implementing stats and such)
 - Proper error handling
 - Figure out how to deal with dates in GraphQL
-- Add match stats table
 - Seed data
 - Unit tests
-- Find out how to reference Matches from Match Stats without causing a circular dependency
