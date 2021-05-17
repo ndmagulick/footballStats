@@ -476,7 +476,23 @@ func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
 }
 
 func (r *queryResolver) PlayerByID(ctx context.Context, playerID int) (*model.Player, error) {
-	panic(fmt.Errorf("not implemented"))
+	playerResult := player.GetPlayerById(playerID)
+
+	return &model.Player{
+			ID:          playerResult.ID,
+			FirstName:   playerResult.FirstName,
+			LastName:    playerResult.LastName,
+			Height:      playerResult.Height,
+			Nationality: playerResult.Nationality,
+			Position:    playerResult.Position,
+			Team: &model.Team{
+				ID:           playerResult.Team.ID,
+				League:       (*model.League)(&playerResult.Team.League),
+				Name:         playerResult.Team.Name,
+				FoundingYear: playerResult.Team.FoundingYear},
+			Number: playerResult.Number,
+			Foot:   playerResult.Foot},
+		nil
 }
 
 func (r *queryResolver) SeasonByLeagueID(ctx context.Context, leagueID int) ([]*model.Season, error) {
@@ -484,7 +500,14 @@ func (r *queryResolver) SeasonByLeagueID(ctx context.Context, leagueID int) ([]*
 }
 
 func (r *queryResolver) SeasonByID(ctx context.Context, seasonID int) (*model.Season, error) {
-	panic(fmt.Errorf("not implemented"))
+	seasonResult := season.GetSeasonById(seasonID)
+
+	return &model.Season{
+			ID:        seasonResult.ID,
+			League:    (*model.League)(&seasonResult.League),
+			StartYear: seasonResult.StartYear,
+			EndYear:   seasonResult.EndYear},
+		nil
 }
 
 func (r *queryResolver) Matches(ctx context.Context) ([]*model.Match, error) {
@@ -492,7 +515,27 @@ func (r *queryResolver) Matches(ctx context.Context) ([]*model.Match, error) {
 }
 
 func (r *queryResolver) MatchByID(ctx context.Context, matchID int) (*model.Match, error) {
-	panic(fmt.Errorf("not implemented"))
+	matchResult := match.GetMatchById(matchID)
+
+	return &model.Match{
+			ID: matchResult.ID,
+			Season: &model.Season{
+				ID:        matchResult.Season.ID,
+				League:    (*model.League)(&matchResult.Season.League),
+				StartYear: matchResult.Season.StartYear,
+				EndYear:   matchResult.Season.EndYear},
+			HomeTeam: &model.Team{
+				ID:           matchResult.HomeTeam.ID,
+				League:       (*model.League)(&matchResult.HomeTeam.League),
+				Name:         matchResult.HomeTeam.Name,
+				FoundingYear: matchResult.HomeTeam.FoundingYear},
+			AwayTeam: &model.Team{
+				ID:           matchResult.AwayTeam.ID,
+				League:       (*model.League)(&matchResult.AwayTeam.League),
+				Name:         matchResult.AwayTeam.Name,
+				FoundingYear: matchResult.AwayTeam.FoundingYear},
+			MatchDay: matchResult.MatchDay},
+		nil
 }
 
 func (r *queryResolver) MatchesBySeasonID(ctx context.Context, seasonID int) ([]*model.Match, error) {
