@@ -422,7 +422,14 @@ func (r *queryResolver) Leagues(ctx context.Context) ([]*model.League, error) {
 }
 
 func (r *queryResolver) LeagueByID(ctx context.Context, leagueID int) (*model.League, error) {
-	panic(fmt.Errorf("not implemented"))
+	leagueResult := league.GetLeagueById(leagueID)
+
+	return &model.League{
+			ID:      leagueResult.ID,
+			Name:    leagueResult.Name,
+			Country: leagueResult.Country,
+			Tier:    leagueResult.Tier},
+		nil
 }
 
 func (r *queryResolver) Teams(ctx context.Context) ([]*model.Team, error) {
@@ -444,7 +451,15 @@ func (r *queryResolver) Teams(ctx context.Context) ([]*model.Team, error) {
 }
 
 func (r *queryResolver) TeamByID(ctx context.Context, teamID int) (*model.Team, error) {
-	panic(fmt.Errorf("not implemented"))
+	teamResult := team.GetTeamById(teamID)
+
+	return &model.Team{
+			ID:           teamResult.ID,
+			Name:         teamResult.Name,
+			League:       (*model.League)(&teamResult.League),
+			FoundingYear: teamResult.FoundingYear,
+		},
+		nil
 }
 
 func (r *queryResolver) Players(ctx context.Context) ([]*model.Player, error) {
