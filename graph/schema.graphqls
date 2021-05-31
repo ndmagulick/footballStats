@@ -239,11 +239,10 @@ type Query {
   playerById(playerId: Int!): Player!
 
   #Seasons
-  seasonByLeagueId(leagueId: Int!): [Season!]!
+  seasonsByLeagueId(leagueId: Int!): [Season!]!
   seasonById(seasonId: Int!): Season!
 
   #Matches
-  matches: [Match!]!
   matchById(matchId: Int!): Match!
   matchesBySeasonId(seasonId: Int!): [Match!]!
 

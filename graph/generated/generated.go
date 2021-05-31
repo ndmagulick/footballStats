@@ -133,12 +133,11 @@ type ComplexityRoot struct {
 		MatchByID            func(childComplexity int, matchID int) int
 		MatchEventsByMatchID func(childComplexity int, matchID int) int
 		MatchStatsByMatchID  func(childComplexity int, matchID int) int
-		Matches              func(childComplexity int) int
 		MatchesBySeasonID    func(childComplexity int, seasonID int) int
 		PlayerByID           func(childComplexity int, playerID int) int
 		Players              func(childComplexity int) int
 		SeasonByID           func(childComplexity int, seasonID int) int
-		SeasonByLeagueID     func(childComplexity int, leagueID int) int
+		SeasonsByLeagueID    func(childComplexity int, leagueID int) int
 		TeamByID             func(childComplexity int, teamID int) int
 		Teams                func(childComplexity int) int
 	}
@@ -188,9 +187,8 @@ type QueryResolver interface {
 	TeamByID(ctx context.Context, teamID int) (*model.Team, error)
 	Players(ctx context.Context) ([]*model.Player, error)
 	PlayerByID(ctx context.Context, playerID int) (*model.Player, error)
-	SeasonByLeagueID(ctx context.Context, leagueID int) ([]*model.Season, error)
+	SeasonsByLeagueID(ctx context.Context, leagueID int) ([]*model.Season, error)
 	SeasonByID(ctx context.Context, seasonID int) (*model.Season, error)
-	Matches(ctx context.Context) ([]*model.Match, error)
 	MatchByID(ctx context.Context, matchID int) (*model.Match, error)
 	MatchesBySeasonID(ctx context.Context, seasonID int) ([]*model.Match, error)
 	MatchEventsByMatchID(ctx context.Context, matchID int) ([]*model.MatchEvent, error)
@@ -813,13 +811,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.MatchStatsByMatchID(childComplexity, args["matchId"].(int)), true
 
-	case "Query.matches":
-		if e.complexity.Query.Matches == nil {
-			break
-		}
-
-		return e.complexity.Query.Matches(childComplexity), true
-
 	case "Query.matchesBySeasonId":
 		if e.complexity.Query.MatchesBySeasonID == nil {
 			break
@@ -863,17 +854,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.SeasonByID(childComplexity, args["seasonId"].(int)), true
 
-	case "Query.seasonByLeagueId":
-		if e.complexity.Query.SeasonByLeagueID == nil {
+	case "Query.seasonsByLeagueId":
+		if e.complexity.Query.SeasonsByLeagueID == nil {
 			break
 		}
 
-		args, err := ec.field_Query_seasonByLeagueId_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_seasonsByLeagueId_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.SeasonByLeagueID(childComplexity, args["leagueId"].(int)), true
+		return e.complexity.Query.SeasonsByLeagueID(childComplexity, args["leagueId"].(int)), true
 
 	case "Query.teamById":
 		if e.complexity.Query.TeamByID == nil {
@@ -1255,11 +1246,10 @@ type Query {
   playerById(playerId: Int!): Player!
 
   #Seasons
-  seasonByLeagueId(leagueId: Int!): [Season!]!
+  seasonsByLeagueId(leagueId: Int!): [Season!]!
   seasonById(seasonId: Int!): Season!
 
   #Matches
-  matches: [Match!]!
   matchById(matchId: Int!): Match!
   matchesBySeasonId(seasonId: Int!): [Match!]!
 
@@ -1748,7 +1738,7 @@ func (ec *executionContext) field_Query_seasonById_args(ctx context.Context, raw
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_seasonByLeagueId_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_seasonsByLeagueId_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
@@ -4393,7 +4383,7 @@ func (ec *executionContext) _Query_playerById(ctx context.Context, field graphql
 	return ec.marshalNPlayer2ᚖfootballStatsᚋgraphᚋmodelᚐPlayer(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_seasonByLeagueId(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_seasonsByLeagueId(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -4410,7 +4400,7 @@ func (ec *executionContext) _Query_seasonByLeagueId(ctx context.Context, field g
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_seasonByLeagueId_args(ctx, rawArgs)
+	args, err := ec.field_Query_seasonsByLeagueId_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -4418,7 +4408,7 @@ func (ec *executionContext) _Query_seasonByLeagueId(ctx context.Context, field g
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().SeasonByLeagueID(rctx, args["leagueId"].(int))
+		return ec.resolvers.Query().SeasonsByLeagueID(rctx, args["leagueId"].(int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4475,41 +4465,6 @@ func (ec *executionContext) _Query_seasonById(ctx context.Context, field graphql
 	res := resTmp.(*model.Season)
 	fc.Result = res
 	return ec.marshalNSeason2ᚖfootballStatsᚋgraphᚋmodelᚐSeason(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Query_matches(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Matches(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Match)
-	fc.Result = res
-	return ec.marshalNMatch2ᚕᚖfootballStatsᚋgraphᚋmodelᚐMatchᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_matchById(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7585,7 +7540,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
-		case "seasonByLeagueId":
+		case "seasonsByLeagueId":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -7593,7 +7548,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_seasonByLeagueId(ctx, field)
+				res = ec._Query_seasonsByLeagueId(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -7608,20 +7563,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_seasonById(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "matches":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_matches(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

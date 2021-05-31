@@ -510,8 +510,22 @@ func (r *queryResolver) PlayerByID(ctx context.Context, playerID int) (*model.Pl
 		nil
 }
 
-func (r *queryResolver) SeasonByLeagueID(ctx context.Context, leagueID int) ([]*model.Season, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) SeasonsByLeagueID(ctx context.Context, leagueID int) ([]*model.Season, error) {
+	var resultSeasons []*model.Season
+	var dbSeasons []season.Season
+	dbSeasons = season.GetAllSeasonsByLeagueId(leagueID)
+
+	for _, seasonEntry := range dbSeasons {
+		resultSeasons = append(resultSeasons,
+			&model.Season{
+				ID:        seasonEntry.ID,
+				League:    (*model.League)(&seasonEntry.League),
+				StartYear: seasonEntry.StartYear,
+				EndYear:   seasonEntry.EndYear,
+			})
+	}
+
+	return resultSeasons, nil
 }
 
 func (r *queryResolver) SeasonByID(ctx context.Context, seasonID int) (*model.Season, error) {
@@ -523,10 +537,6 @@ func (r *queryResolver) SeasonByID(ctx context.Context, seasonID int) (*model.Se
 			StartYear: seasonResult.StartYear,
 			EndYear:   seasonResult.EndYear},
 		nil
-}
-
-func (r *queryResolver) Matches(ctx context.Context) ([]*model.Match, error) {
-	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) MatchByID(ctx context.Context, matchID int) (*model.Match, error) {
@@ -554,15 +564,144 @@ func (r *queryResolver) MatchByID(ctx context.Context, matchID int) (*model.Matc
 }
 
 func (r *queryResolver) MatchesBySeasonID(ctx context.Context, seasonID int) ([]*model.Match, error) {
-	panic(fmt.Errorf("not implemented"))
+	var resultMatches []*model.Match
+	var dbMatches []match.Match
+	dbMatches = match.GetMatchesBySeasonId(seasonID)
+
+	for _, match := range dbMatches {
+
+		resultMatches = append(resultMatches,
+			&model.Match{
+				ID: match.ID,
+				Season: &model.Season{
+					ID:        match.Season.ID,
+					League:    (*model.League)(&match.Season.League),
+					StartYear: match.Season.StartYear,
+					EndYear:   match.Season.EndYear},
+				HomeTeam: &model.Team{
+					ID:           match.HomeTeam.ID,
+					League:       (*model.League)(&match.HomeTeam.League),
+					Name:         match.HomeTeam.Name,
+					FoundingYear: match.HomeTeam.FoundingYear},
+				AwayTeam: &model.Team{
+					ID:           match.AwayTeam.ID,
+					League:       (*model.League)(&match.AwayTeam.League),
+					Name:         match.AwayTeam.Name,
+					FoundingYear: match.AwayTeam.FoundingYear},
+				MatchDay: match.MatchDay,
+			})
+	}
+
+	return resultMatches, nil
 }
 
 func (r *queryResolver) MatchEventsByMatchID(ctx context.Context, matchID int) ([]*model.MatchEvent, error) {
-	panic(fmt.Errorf("not implemented"))
+	var resultMatchEvents []*model.MatchEvent
+	var dbMatchEvents []match.MatchEvent
+	dbMatchEvents = match.GetMatchEventsByMatchId(matchID)
+
+	for _, matchEvent := range dbMatchEvents {
+		resultMatchEvents = append(resultMatchEvents,
+			&model.MatchEvent{
+				ID:           matchEvent.ID,
+				EventType:    int(matchEvent.EventType),
+				EventMinute:  matchEvent.EventMinute,
+				StoppageTime: &matchEvent.StoppageTime,
+				Match: &model.Match{
+					ID:       matchEvent.Match.ID,
+					MatchDay: matchEvent.Match.MatchDay,
+					Season: &model.Season{
+						ID:        matchEvent.Match.Season.ID,
+						League:    (*model.League)(&matchEvent.Match.Season.League),
+						StartYear: matchEvent.Match.Season.StartYear,
+						EndYear:   matchEvent.Match.Season.EndYear,
+					},
+					HomeTeam: &model.Team{
+						ID:           matchEvent.Match.HomeTeam.ID,
+						League:       (*model.League)(&matchEvent.Match.HomeTeam.League),
+						Name:         matchEvent.Match.HomeTeam.Name,
+						FoundingYear: matchEvent.Match.HomeTeam.FoundingYear,
+					},
+					AwayTeam: &model.Team{
+						ID:           matchEvent.Match.AwayTeam.ID,
+						League:       (*model.League)(&matchEvent.Match.AwayTeam.League),
+						Name:         matchEvent.Match.AwayTeam.Name,
+						FoundingYear: matchEvent.Match.AwayTeam.FoundingYear,
+					},
+				},
+				Team: &model.Team{
+					ID:           matchEvent.Team.ID,
+					League:       (*model.League)(&matchEvent.Team.League),
+					Name:         matchEvent.Team.Name,
+					FoundingYear: matchEvent.Team.FoundingYear,
+				},
+				Player: &model.Player{
+					ID:          matchEvent.Player.ID,
+					FirstName:   matchEvent.Player.FirstName,
+					LastName:    matchEvent.Player.LastName,
+					Height:      matchEvent.Player.Height,
+					Nationality: matchEvent.Player.Nationality,
+					Position:    matchEvent.Player.Position,
+					Number:      matchEvent.Player.Number,
+					Foot:        matchEvent.Player.Foot,
+					Team: &model.Team{
+						ID:           matchEvent.Player.Team.ID,
+						League:       (*model.League)(&matchEvent.Player.Team.League),
+						Name:         matchEvent.Player.Team.Name,
+						FoundingYear: matchEvent.Player.Team.FoundingYear,
+					},
+				},
+			})
+	}
+
+	return resultMatchEvents, nil
 }
 
 func (r *queryResolver) MatchStatsByMatchID(ctx context.Context, matchID int) (*model.MatchStats, error) {
-	panic(fmt.Errorf("not implemented"))
+	resultMatchStats := match.GetMatchStatsByMatchId(matchID)
+
+	correspondingMatch := match.GetMatchById(resultMatchStats.MatchID)
+
+	return &model.MatchStats{
+			ID:                resultMatchStats.ID,
+			PossessionHome:    resultMatchStats.PossessionHome,
+			TotalShotsHome:    resultMatchStats.TotalShotsHome,
+			ShotsOnTargetHome: resultMatchStats.ShotsOnTargetHome,
+			SavesHome:         resultMatchStats.SavesHome,
+			CornersHome:       resultMatchStats.CornersHome,
+			FoulsHome:         resultMatchStats.FoulsHome,
+			OffsidesHome:      resultMatchStats.OffsidesHome,
+			PossessionAway:    resultMatchStats.PossessionAway,
+			TotalShotsAway:    resultMatchStats.TotalShotsAway,
+			ShotsOnTargetAway: resultMatchStats.ShotsOnTargetAway,
+			SavesAway:         resultMatchStats.SavesAway,
+			CornersAway:       resultMatchStats.CornersAway,
+			FoulsAway:         resultMatchStats.FoulsAway,
+			OffsidesAway:      resultMatchStats.OffsidesAway,
+			Match: &model.Match{
+				ID: correspondingMatch.ID,
+				Season: &model.Season{
+					ID:        correspondingMatch.Season.ID,
+					League:    (*model.League)(&correspondingMatch.Season.League),
+					StartYear: correspondingMatch.Season.StartYear,
+					EndYear:   correspondingMatch.Season.EndYear,
+				},
+				HomeTeam: &model.Team{
+					ID:           correspondingMatch.HomeTeam.ID,
+					League:       (*model.League)(&correspondingMatch.HomeTeam.League),
+					Name:         correspondingMatch.HomeTeam.Name,
+					FoundingYear: correspondingMatch.HomeTeam.FoundingYear,
+				},
+				AwayTeam: &model.Team{
+					ID:           correspondingMatch.AwayTeam.ID,
+					League:       (*model.League)(&correspondingMatch.AwayTeam.League),
+					Name:         correspondingMatch.AwayTeam.Name,
+					FoundingYear: correspondingMatch.AwayTeam.FoundingYear,
+				},
+				MatchDay: correspondingMatch.MatchDay,
+			},
+		},
+		nil
 }
 
 // Mutation returns generated.MutationResolver implementation.
