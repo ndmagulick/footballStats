@@ -1,0 +1,85 @@
+/*
+leagues/competitions
+teams
+players
+
+SQL/Go/React
+GraphQL/REST
+Add auth later
+*/
+
+/*
+League Schema:
+- League ID, int PK
+- League Name, nvarchar
+- Country, nvarchar(2) (ISO code)
+*/
+
+/*
+Team Schema:
+- Team ID, int PK
+- League ID, int FK
+- Team Name, nvarchar
+- Founding year, int
+- crest image, nvarchar (filepath)
+- Tier, int
+*/
+
+/*
+Player schema:
+- Player ID, int PK
+- first name, nvarchar
+- last name, nvarchar
+- date of birth, date
+- height (in meters), decimal
+- nationality1, nvarchar
+- nationality2, nvarchar (do we need a second nationality?)
+- position, nvarchar (enum)
+- team id, int  FK
+- number, int
+- foot, nvarchar(1)
+- player photo, nvarchar (filepath)
+*/
+
+/*** PLAYER STATS WILL BE FETCHED FROM MATCH EVENTS ***/
+
+/*
+Transfers schema:
+- Transfer ID, int PK
+- team from, int FK
+- team to, int FK
+- transfer amount (some currency), int(?)
+- date of transfer, date
+*/
+
+/*
+Match Schema:
+- Match ID, int PK
+- Season ID, int FK
+- Home team id, int FK
+- away team id, int FK
+- league id, int FK
+- match date, datetime
+- home goals, int
+- away goals, int
+- halftime home goals, int
+- halftime away goals, int
+- Match Day number, int
+- Venue ID, int
+*/
+
+/*
+Match event schema:
+- Match Event Id, int PK
+- Match id, int FK
+- Minute, int
+- Event type, nvarchar (this will probably be an enum, goal/assist/sub/yellow/red/2nd yellow)
+- Player Id, int FK
+- Team Id, int FK
+*/
+
+/*
+Match Stats schema:
+*/
+
+/*** Need to figure out schema for starting xi, bench, formation, etc ***/
